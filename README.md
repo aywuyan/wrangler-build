@@ -1,2 +1,3 @@
 # wrangler-build
-Build Cloudflare Wrangler for arm64
+
+build workflow for cloudflare wrangler
