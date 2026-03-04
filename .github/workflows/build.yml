@@ -1,0 +1,36 @@
+name: Build wrangler
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-unknown-linux-gnu
+          override: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross pkg-config libssl-dev
+
+      - name: Build Wrangler
+        run: |
+          git clone https://github.com/cloudflare/wrangler.git /tmp/wrangler
+          cd /tmp/wrangler
+          cargo build --release --target aarch64-unknown-linux-gnu
+
+      - name: Upload ARM64 binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrangler-arm64
+          path: /tmp/wrangler/target/aarch64-unknown-linux-gnu/release/wrangler
